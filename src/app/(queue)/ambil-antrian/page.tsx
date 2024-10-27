@@ -11,11 +11,9 @@ import Background from '@/app/images/bauhaus-background.svg'
 
 import Index from '@/components/pages/queue/ambil-antrian'
 
-type Props = {}
-
 const queryClient = new QueryClient();
 
-function Page({}: Props) {
+function Page() {
   return (
     <QueryClientProvider client={queryClient}>
       <section
