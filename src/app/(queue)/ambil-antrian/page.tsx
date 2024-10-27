@@ -8,7 +8,6 @@ import Image from 'next/image'
 
 import Logo from '@/app/images/logo-upi.png'
 import Background from '@/app/images/bauhaus-background.svg'
-import BackgroundSecond from '@/app/images/bauhasu-background-second.svg'
 
 import Index from '@/components/pages/queue/ambil-antrian'
 
