@@ -26,7 +26,6 @@ async function connectToBluetoothDevice() {
   try {
     // Define the UUIDs of the services you want to access
     const serviceUUIDs = [
-      '18F0', // Replace with your actual service UUIDs
       'E7810A71-73AE-499D-8C15-FAA0AEF0CF2'
     ];
 
