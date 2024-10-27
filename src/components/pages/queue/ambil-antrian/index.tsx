@@ -7,8 +7,6 @@ import ImageVerifikasi from '@/app/images/layanan-verifikasi.png'
 
 import Image, { StaticImageData } from 'next/image'
 
-type Props = {}
-
 type Step = 1 | 2 | 3;
 
 type ServiceCardProps = {
@@ -46,34 +44,6 @@ async function connectToAnyBluetoothDevice() {
   }
 }
 
-async function logDeviceInfo(server: BluetoothRemoteGATTServer) {
-  try {
-    const services = await server.getPrimaryServices();
-    console.log(services)
-  } catch (error) {
-    console.error("Error reading device info", error);
-  }
-}
-
-async function connectToPrinter() {
-  try {
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: ['your_printer_service_uuid'] }],
-    });
-    
-    // Check if GATT is available
-    if (!device.gatt) {
-      throw new Error("GATT server not available on this device.");
-    }
-        
-    // Connect to the GATT Server
-    const server = await device.gatt.connect();
-    return server;
-  } catch (error) {
-    console.error("Connection failed", error);
-  }
-}
-
 function ServiceCard({ title, description, imageSrc, onClick }: ServiceCardProps) {
   return (
     <div
@@ -97,7 +67,7 @@ function ServiceCard({ title, description, imageSrc, onClick }: ServiceCardProps
 }
 
 
-function Index({}: Props) {
+function Index() {
   const [step, setStep] = useState<Step>(1); // Track the current step
   const [selectedLayanan, setSelectedLayanan] = useState<string | null>(null); // Store selected service
 
