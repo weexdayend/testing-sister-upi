@@ -16,7 +16,7 @@ type ServiceCardProps = {
   onClick: () => void;
 };
 
-async function connectToAnyPairedDevice() {
+async function connectToBluetoothDevice() {
   if (!navigator.bluetooth) {
     console.error("Web Bluetooth is not supported on this browser.");
     alert("Web Bluetooth is not supported on this browser.");
@@ -24,10 +24,15 @@ async function connectToAnyPairedDevice() {
   }
   
   try {
-    // Request any Bluetooth device (paired or nearby)
+    // Define the UUIDs of the services you want to access
+    const serviceUUIDs = [
+      '18F0', // Replace with your actual service UUIDs
+      'E7810A71-73AE-499D-8C15-FAA0AEF0CF2'
+    ];
+
+    // Request a Bluetooth device with the specified service UUIDs
     const device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [] // Empty here to scan broadly; specific UUIDs can be added if known
+      filters: [{ services: serviceUUIDs }]
     });
 
     console.log('Device selected:', device);
@@ -41,7 +46,7 @@ async function connectToAnyPairedDevice() {
     const server = await device.gatt.connect();
     console.log('Connected to GATT server:', server);
 
-    // Get and list all primary services
+    // Get the primary services
     const services = await server.getPrimaryServices();
     services.forEach(service => console.log("Available service UUID:", service.uuid));
     
@@ -94,7 +99,7 @@ function Index() {
   };
 
   async function handlePrint() {
-    await connectToAnyPairedDevice();
+    await connectToBluetoothDevice();
   }
 
   return (
