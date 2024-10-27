@@ -35,7 +35,7 @@ COPY --from=builder /app/.next ./.next
 
 # Expose port 3000 to the outside world (assuming your app listens on port 3000)
 
-EXPOSE 7655
+EXPOSE 8844
 
 # Start the Next.js app in production mode
 CMD ["npm", "start"]
