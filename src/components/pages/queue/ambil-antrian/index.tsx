@@ -16,18 +16,16 @@ type ServiceCardProps = {
   onClick: () => void;
 };
 
-async function connectToAnyPairedDevice() {
+async function connectToAnyBluetoothDevice() {
   if (!navigator.bluetooth) {
     console.error("Web Bluetooth is not supported on this browser.");
     alert("Web Bluetooth is not supported on this browser.");
-    return;
   }
   
   try {
-    // Request any Bluetooth device (paired or nearby)
+    // Request any Bluetooth device
     const device = await navigator.bluetooth.requestDevice({
       acceptAllDevices: true,
-      optionalServices: [] // Empty here to scan broadly; specific UUIDs can be added if known
     });
 
     console.log('Device selected:', device);
@@ -41,16 +39,15 @@ async function connectToAnyPairedDevice() {
     const server = await device.gatt.connect();
     console.log('Connected to GATT server:', server);
 
-    // Get and list all primary services
+    // Get the primary services
     const services = await server.getPrimaryServices();
-    services.forEach(service => console.log("Available service UUID:", service.uuid));
+    console.log("Available services:", services);
     
     return services;
   } catch (error) {
     console.error("Error reading device info:", error);
   }
 }
-
 
 function ServiceCard({ title, description, imageSrc, onClick }: ServiceCardProps) {
   return (
@@ -94,7 +91,7 @@ function Index() {
   };
 
   async function handlePrint() {
-    await connectToAnyPairedDevice();
+    await connectToAnyBluetoothDevice();
   }
 
   return (
