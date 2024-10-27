@@ -17,6 +17,11 @@ type ServiceCardProps = {
 };
 
 async function connectToAnyBluetoothDevice() {
+  if (!navigator.bluetooth) {
+    console.error("Web Bluetooth is not supported on this browser.");
+    alert("Web Bluetooth is not supported on this browser.");
+  }
+  
   try {
     // Request any Bluetooth device
     const device = await navigator.bluetooth.requestDevice({
