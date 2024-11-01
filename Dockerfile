@@ -1,4 +1,4 @@
-# Use the official Node.js image as the base for the builder stage
+# Use the official Node.js image as base
 FROM node:18 AS builder
 
 # Set the working directory inside the container
@@ -6,12 +6,12 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
-COPY prisma ./prisma/ 
+COPY prisma ./prisma/
 
-# Install dependencies, including development dependencies
+# Install dependencies
 RUN npm install
 
-# Generate Prisma Client
+# Generate Prisma client
 RUN npx prisma generate
 
 # Copy the rest of the application code
@@ -31,18 +31,16 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install only production dependencies
+# Install production dependencies
 RUN npm install --only=production
-
-# Generate Prisma Client
-RUN npx prisma generate
 
 # Copy built files and Prisma Client from the builder stage
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules/.prisma ./.prisma
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Expose port 8844 to the outside world
+# Expose the application port
 EXPOSE 8844
 
 # Start the Next.js app in production mode
