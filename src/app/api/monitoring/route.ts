@@ -3,10 +3,6 @@ import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic'; 
 
-export const config = {
-  runtime: 'edge', // Use 'nodejs' if running in Node.js environment
-};
-
 export async function GET(request: Request) {
   const headers = new Headers({
     'Content-Type': 'text/event-stream',
