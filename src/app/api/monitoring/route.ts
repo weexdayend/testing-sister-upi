@@ -10,8 +10,11 @@ export async function GET(request: Request) {
 
   const stream = new ReadableStream({
     async start(controller) {
+      const encoder = new TextEncoder();
+
       const sendEvent = (data: any) => {
-        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        const encodedData = encoder.encode(`data: ${JSON.stringify(data)}\n\n`);
+        controller.enqueue(encodedData);
       };
 
       const fetchData = async () => {

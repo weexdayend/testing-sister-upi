@@ -12,8 +12,11 @@ export async function GET(request: Request) {
 
   const stream = new ReadableStream({
     start(controller) {
+      const encoder = new TextEncoder();
+
       const sendEvent = (data: any) => {
-        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        const encodedData = encoder.encode(`data: ${JSON.stringify(data)}\n\n`);
+        controller.enqueue(encodedData);
       };
 
       const fetchData = async () => {
@@ -27,7 +30,7 @@ export async function GET(request: Request) {
           // Send the fetched data
           sendEvent(data);
         } catch (error) {
-          console.error('Error fetching Antrian data:', error);
+          console.error('Error fetching Panggilan data:', error);
           sendEvent({ error: 'Failed to fetch data' });
         }
       };
