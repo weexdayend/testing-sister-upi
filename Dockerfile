@@ -34,6 +34,9 @@ COPY package*.json ./
 # Install only production dependencies
 RUN npm install --only=production
 
+# Generate Prisma Client
+RUN npx prisma generate
+
 # Copy built files and Prisma Client from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules/.prisma ./.prisma
