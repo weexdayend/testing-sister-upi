@@ -7,14 +7,17 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install dependencies including Prisma CLI
+# Install dependencies
 RUN npm install
+
+# Install Prisma globally
+RUN npm install -g prisma
 
 # Copy the rest of the application code
 COPY . .
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN prisma generate
 
 # Build the Next.js app
 RUN npm run build
@@ -30,21 +33,15 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install production dependencies, including Prisma client
+# Install production dependencies
 RUN npm install --only=production
 
-# Copy Prisma schema and generated client
-COPY --from=builder /app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma
-
-# Copy built files and other application code from the builder stage
+# Copy built files from the builder stage
 COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/prisma ./prisma
 
-# Copy Prisma schema files to run migrations, if necessary
-COPY prisma ./prisma
-
-# Expose port 8844 to the outside world
+# Expose port 3000 to the outside world (assuming your app listens on port 3000)
 EXPOSE 8844
 
-# Run database migrations and start the app
-CMD ["npm start"]
+# Start the Next.js app in production mode
+CMD ["npm", "start"]
