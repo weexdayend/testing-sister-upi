@@ -89,3 +89,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+.hidden-element {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.visible-element {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 30s linear infinite;
+}

@@ -1,87 +1,117 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { motion } from 'framer-motion';
 
 import ImagePelanggan from '@/app/images/layanan-pelanggan.png'
 import ImageVerifikasi from '@/app/images/layanan-verifikasi.png'
 
-import Image, { StaticImageData } from 'next/image'
+import ServiceCard from './ServiceCard';
+import ServiceGrid from './ServiceGrid';
+import { CheckCircle2Icon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type Step = 1 | 2 | 3;
 
-type ServiceCardProps = {
-  title: string;
-  description: string;
-  imageSrc: StaticImageData;
-  onClick: () => void;
-};
-
-async function connectToBluetoothDevice() {
-  if (!navigator.bluetooth) {
-    console.error("Web Bluetooth is not supported on this browser.");
-    alert("Web Bluetooth is not supported on this browser.");
-    return;
-  }
-  
-  try {
-    // Define the UUIDs of the services you want to access
-    const serviceUUIDs = [
-      'E7810A71-73AE-499D-8C15-FAA0AEF0CF2'
-    ];
-
-    // Request a Bluetooth device with the specified service UUIDs
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: serviceUUIDs }]
-    });
-
-    console.log('Device selected:', device);
-
-    // Check if the GATT server is available
-    if (!device.gatt) {
-      throw new Error("GATT server not available on this device.");
-    }
-
-    // Connect to the GATT server
-    const server = await device.gatt.connect();
-    console.log('Connected to GATT server:', server);
-
-    // Get the primary services
-    const services = await server.getPrimaryServices();
-    services.forEach(service => console.log("Available service UUID:", service.uuid));
-    
-    return services;
-  } catch (error) {
-    console.error("Error reading device info:", error);
-  }
-}
-
-
-function ServiceCard({ title, description, imageSrc, onClick }: ServiceCardProps) {
-  return (
-    <div
-      className="
-        bg-white flex flex-col w-full h-[360px] px-6 py-6 items-center rounded-3xl shadow-lg shadow-blue-500/10
-        transition-all ease-in active:scale-95 cursor-pointer
-      "
-      onClick={onClick}
-    >
-      <div className="flex flex-col justify-between gap-4 h-full">
-        <div className="flex items-center justify-center h-[55%]">
-          <Image alt={`${title} image`} src={imageSrc} width={250} height={250} className="object-contain" />
-        </div>
-        <div className="flex flex-col max-w-[25rem] gap-2 p-4 h-[45%] overflow-hidden text-center">
-          <h1 className="text-xl font-bold text-stone-950">{title}</h1>
-          <p className="text-sm text-stone-950/70">{description}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// Update these UUIDs as per rpp02n's specifications
+const SERVICE_UUID = "49535343-fe7d-4ae5-8fa9-9fafd205e455"; // e.g., "printer_service"
+const CHARACTERISTIC_UUID = "49535343-8841-43f4-a8d4-ecbe34729bb3"; // e.g., "print_characteristic"
 
 function Index() {
-  const [step, setStep] = useState<Step>(1); // Track the current step
-  const [selectedLayanan, setSelectedLayanan] = useState<string | null>(null); // Store selected service
+  const [device, setDevice] = useState<BluetoothDevice | null>(null);
+  const [status, setStatus] = useState("Disconnected");
+  const [printerCharacteristic, setPrinterCharacteristic] = useState<BluetoothRemoteGATTCharacteristic | null>(null);
+
+  async function requestBluetoothDevice() {
+    try {
+      setStatus("Requesting Bluetooth device...");
+      const selectedDevice = await navigator.bluetooth.requestDevice({
+        filters: [{ name: "RPP02N" }], // Filters for devices with name "rpp02n"
+        optionalServices: [SERVICE_UUID],
+      });
+
+      setDevice(selectedDevice);
+      setStatus(`Connected to ${selectedDevice.name || "Unnamed device"}`);
+      
+      const server = await selectedDevice.gatt?.connect();
+      if (server) {
+        setStatus("Connected to GATT server");
+        
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+        
+        setPrinterCharacteristic(characteristic);
+        setStatus("Printer characteristic found");
+        
+        selectedDevice.addEventListener("gattserverdisconnected", onDisconnected);
+      } else {
+        setStatus("Connection failed");
+      }
+    } catch (error) {
+      console.error("Bluetooth pairing failed:", error);
+      setStatus("Failed to connect");
+    }
+  }
+
+  function onDisconnected() {
+    setDevice(null);
+    setStatus("Device disconnected");
+    setPrinterCharacteristic(null);
+  }
+
+  async function sendPrintCommand(nomor: string) {
+    if (!printerCharacteristic) {
+      console.error("No printer characteristic available");
+      setStatus("Printer characteristic not available");
+      return;
+    }
+    try {
+      // Get current date and time in Asia/Jakarta time zone
+      const now = new Date();
+      const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+          timeZone: 'Asia/Jakarta',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+      });
+      const timeFormatter = new Intl.DateTimeFormat('id-ID', {
+          timeZone: 'Asia/Jakarta',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+      });
+      
+      const date = dateFormatter.format(now); // Format as DD/MM/YYYY
+      const time = timeFormatter.format(now); // Format as HH:MM
+
+      // Normal size for "Layanan Pelanggan"
+      const layananText = `\x1b\x61\x01\x1b\x21\x00${selectedLayanan}:\n`;
+      const serviceText = `\x1b\x61\x01\x1b\x21\x00${selectedKategoriLayanan}\n\n\n`;
+      
+      // Larger font for "Nomor 001LP"
+      const NomorAntrian = `\x1b\x21\x11\x1d\x21\x33${nomor}\n\n\n`;
+      
+      // Add date and time in normal size
+      const dateTimeText = `\x1b\x61\x01\x1b\x21\x00${date} ${time}\n\n\n`;
+
+      const CopyrightText1 = `\x1b\x45\x01\x1b\x21\x00Balai Bahasa\n\x1b\x45\x00\n`;
+      const CopyrightText2 = `\x1b\x45\x01\x1b\x21\x00Universitas Pendidikan Indonesia\n\x1b\x45\x00`;
+
+      // Combine all text data
+      const printData =  dateTimeText + NomorAntrian + layananText + serviceText  + CopyrightText1 + CopyrightText2;
+  
+      const encoder = new TextEncoder();
+      const datas = encoder.encode(printData);
+      await printerCharacteristic.writeValue(datas);
+      setStatus("Print command sent successfully");
+    } catch (error) {
+      console.error("Failed to send print command:", error);
+      setStatus("Failed to send print command");
+    }
+  }
+
+  const [step, setStep] = useState<Step>(1);
+  const [selectedLayanan, setSelectedLayanan] = useState<string>("");
+  const [selectedKategoriLayanan, setSelectedKategoriLayanan] = useState<string>("");
 
   const handleNext = () => {
     if (step < 3) setStep((prevStep) => (prevStep + 1) as Step);
@@ -97,12 +127,109 @@ function Index() {
     exit: { opacity: 0, y: 50 }     // Slide down 50px when exiting
   };
 
-  async function handlePrint() {
-    await connectToBluetoothDevice();
-  }
+  const handlePrint = (nomor: any) => {
+    if (window.electron) {
+      // Get current date and time in Asia/Jakarta time zone
+      const now = new Date();
+      const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+          timeZone: 'Asia/Jakarta',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+      });
+      const timeFormatter = new Intl.DateTimeFormat('id-ID', {
+          timeZone: 'Asia/Jakarta',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+      });
+      
+      const date = dateFormatter.format(now); // Format as DD/MM/YYYY
+      const time = timeFormatter.format(now); // Format as HH:MM
+
+      // Normal size for "Layanan Pelanggan"
+      const layananText = `\x1b\x61\x01\x1b\x21\x00${selectedLayanan}:\n`;
+      const serviceText = `\x1b\x61\x01\x1b\x21\x00${selectedKategoriLayanan}\n\n\n`;
+      
+      // Larger font for "Nomor 001LP"
+      const NomorAntrian = `\x1b\x21\x11\x1d\x21\x33${nomor}\n\n\n`;
+      
+      // Add date and time in normal size
+      const dateTimeText = `\x1b\x61\x01\x1b\x21\x00${date} ${time}\n\n\n`;
+
+      const CopyrightText1 = `\x1b\x45\x01\x1b\x21\x00Balai Bahasa\n\x1b\x45\x00\n`;
+      const CopyrightText2 = `\x1b\x45\x01\x1b\x21\x00Universitas Pendidikan Indonesia\n\x1b\x45\x00\n\n\n\n`;
+
+      // Combine all text data
+      const printData =  dateTimeText + NomorAntrian + layananText + serviceText  + CopyrightText1 + CopyrightText2;
+  
+      console.log('Sending formatted data to Electron:', printData); 
+      window.electron.printQueue(printData);
+
+      // const queueText = `Nomor Antrian: ${nomor}`; // Text to be spoken
+
+      // // Use Web Speech API for TTS
+      // const utterance = new SpeechSynthesisUtterance(queueText);
+      // utterance.lang = 'id-ID'; // Set language to Indonesian
+
+      // // Adjust rate and pitch for slower and clearer speech
+      // utterance.rate = 0.7; // Default is 1, set to lower for slower speech
+      // utterance.pitch = 0.5; // Default is 1, you can adjust for different tonalities
+
+      // // Speak the queue number
+      // window.speechSynthesis.speak(utterance);
+    } else {
+      console.error('Electron API is not available');
+    }
+  };
+
+  const postAntrian = async () => {
+    const response = await fetch('/api/antrian', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        layanan: selectedLayanan,
+        kategoriLayanan: selectedKategoriLayanan,
+        statusAntrian: 'Open',
+      }),
+    });
+    const data = await response.json();
+    if (data) {
+      sendPrintCommand(data)
+    }
+  };
+
+  useEffect(() => {
+    // Check if the step is 3 to trigger postAntrian
+    if (step === 3) {
+      postAntrian();
+
+      // Set a timeout to reset step back to 1 after 5 seconds
+      const timeoutId = setTimeout(() => {
+        setStep(1);
+        setSelectedLayanan("")
+        setSelectedKategoriLayanan("")
+      }, 5000); // 5000 ms = 5 seconds
+
+      // Cleanup the timeout if component unmounts or step changes
+      return () => clearTimeout(timeoutId);
+    }
+  }, [step]);
 
   return (
     <div className="min-w-[50rem] flex flex-col gap-8">
+      {
+        device ? (
+          <></>
+        ) : (
+          <Button onClick={requestBluetoothDevice}>
+            {device ? "Reconnect" : "Find and Pair Bluetooth Device"}
+          </Button>
+        )
+      }
+      
       {step === 1 && (
         <motion.div
           key="step1"
@@ -123,7 +250,7 @@ function Index() {
               description="Untuk keperluan umum, seperti pertanyaan atau bantuan. Dapatkan layanan cepat dan mudah untuk semua kebutuhan Anda."
               imageSrc={ImagePelanggan}
               onClick={() => {
-                setSelectedLayanan('pelanggan');
+                setSelectedLayanan('Layanan Pelanggan');
                 handleNext();
               }}
             />
@@ -138,7 +265,7 @@ function Index() {
               description="Verifikasi data Anda dengan mudah dan aman. Pilih layanan ini jika Anda perlu melakukan validasi informasi atau dokumen."
               imageSrc={ImageVerifikasi}
               onClick={() => {
-                setSelectedLayanan('verifikasi');
+                setSelectedLayanan('Layanan Verifikasi');
                 handleNext();
               }}
             />
@@ -147,24 +274,19 @@ function Index() {
       )}
 
       {step === 2 && (
-        <motion.div
+        <div
           key="step2"
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={variants}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center gap-4"
+          className="flex flex-col items-center gap-12"
         >
-          <h1 className="text-xl font-bold">Pilih Detail Layanan - {selectedLayanan}</h1>
-          {/* Additional form fields specific to layanan */}
-          <button onClick={handleNext} className="px-4 py-2 bg-indigo-500 text-white rounded-lg">
-            Next to Print Queue
-          </button>
-          <button onClick={handleBack} className="mt-2 text-indigo-500">
-            Back
-          </button>
-        </motion.div>
+          <ServiceGrid 
+            selectedLayanan={selectedLayanan} 
+            setSelectedService={(e) => {
+              setSelectedKategoriLayanan(e)
+              handleNext();
+            }} // Pass the callback
+            back={handleBack}
+          />
+        </div>
       )}
 
       {step === 3 && (
@@ -177,13 +299,20 @@ function Index() {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center gap-4"
         >
-          <h1 className="text-xl font-bold">Print Queue</h1>
-          <p>Your selected service: {selectedLayanan}</p>
-          {/* Show print button or any other final action */}
-          <button onClick={handlePrint} className="px-4 py-2 bg-green-500 text-white rounded-lg">Print Queue</button>
-          <button onClick={handleBack} className="mt-2 text-indigo-500">
-            Back
-          </button>
+          <div className="bg-stone-700 flex flex-row w-fit gap-12 px-6 py-8 items-center justify-between rounded-3xl text-neutral-50">
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold">Terima kasih telah menggunakan layanan kami,</h1>
+              <p>Silahkan ambil nomor antrian anda.</p>
+            </div>
+            <CheckCircle2Icon className='w-12 h-12 text-white' />
+            {/* Show print button or any other final action */}
+            {/* <button onClick={postAntrian} className="px-4 py-2 bg-green-500 text-white rounded-lg">
+              Print Queue
+            </button>
+            <button onClick={handleBack} className="mt-2 text-indigo-500">
+              Back
+            </button> */}
+          </div>
         </motion.div>
       )}
     </div>
