@@ -1,6 +1,4 @@
 // app/api/antrian/route.ts
-import { NextResponse } from 'next/server';
-
 import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
@@ -25,7 +23,7 @@ export async function GET(request: Request) {
           const antrianData = await prisma.antrian.findMany();
 
           // Map users to their nomorAntrian if they have one
-          const result = users.map(user => {
+          const result = users.map((user: any) => {
             const userAntrian = antrianData.find(antrian => antrian.assigned === user.id);
             return {
               userId: user.id,
