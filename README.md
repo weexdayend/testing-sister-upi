@@ -1,9 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistem Antrian
 
-## Getting Started
 
-First, run the development server:
+## Features
 
+- Ambil Antrian -
+    Pelanggan mengambil nomor antrian dengan memilih layanan yang mereka butuhkan.
+
+- Monitoring Antrian -
+    Menampilkan status antrian saat ini di semua loket dan memberikan pengumuman audio.
+
+- Antrian Dashboard -
+    Dashboard untuk loket agar dapat mengelola antrian dan melayani pelanggan.
+
+
+## Requirements
+
+- Node.js (version 18 or higher)
+- PostgreSQL as the database
+- Next.js
+- Tailwind CSS for styling
+- Prisma as the ORM for database management
+- Optional: Docker for containerized deployment
+
+
+## Installation
+
+1. First, clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/your-username/sistem-antrian.git
+cd sistem-antrian
+npm install
+```
+
+2. Configure Environment Variables
+Buat file .env di direktori root dan tambahkan variabel:
+```bash
+DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate with openssl"
+```
+Ganti <user>, <password>, <host>, <port>, dan <database> dengan detail PostgreSQL Anda.
+
+3. Run Database Migrations
+Jalankan migrasi Prisma untuk mengatur skema database Anda:
+
+```bash
+npx prisma migrate dev
+```
+
+4. Start the Development Server
 ```bash
 npm run dev
 # or
@@ -13,24 +59,3 @@ pnpm dev
 # or
 bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
