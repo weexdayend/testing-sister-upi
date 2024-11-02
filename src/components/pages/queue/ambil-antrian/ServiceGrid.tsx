@@ -73,7 +73,7 @@ const ServiceGrid: React.FC<ServiceGridProps> = ({ selectedLayanan, setSelectedS
           onClick={() => setSelectedService(service.title)}
         >
           <div className="flex flex-col justify-center h-full">
-            <h1 className="text-lg font-bold text-neutral-50">{service.title}</h1>
+            <h1 className="text-xl font-bold text-neutral-50">{service.title}</h1>
             <p className="text-sm text-neutral-50">{service.description}</p>
           </div>
         </div>

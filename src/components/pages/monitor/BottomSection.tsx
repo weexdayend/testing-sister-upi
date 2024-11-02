@@ -47,11 +47,17 @@ function BottomSection({ data }: Props) {
     // GSAP animation setup
     tl.current.clear();
     tl.current
-      .to(carouselRef.current, { opacity: 0, duration: 0.5 })
+      // Slide out to the left
+      .to(carouselRef.current, { x: '-100%', opacity: 0, duration: 0.5 })
       .call(() => {
+        // Update content while carousel is out of view
         setCurrentChunkIndex((index) => (index + 1) % tempChunks.length);
       })
-      .to(carouselRef.current, { opacity: 1, duration: 0.5 })
+      // Move to the right (off-screen) instantly to prepare for the slide-in effect
+      .set(carouselRef.current, { x: '100%' })
+      // Slide in from the right
+      .to(carouselRef.current, { x: '0%', opacity: 1, duration: 0.5 })
+      // Pause briefly before repeating
       .to({}, { duration: 10 })
       .repeat(-1);
   }, [data]);
@@ -59,8 +65,8 @@ function BottomSection({ data }: Props) {
   const renderChunk = () => {
     const chunk = chunks[currentChunkIndex] || [];
     return chunk.map((item, idx) => (
-      <div key={idx} className="bg-yellow-400 text-stone-950 px-6 py-6 flex flex-col items-center justify-center border rounded-xl w-full">
-        <h1 className="text-sm">{item.userName}</h1>
+      <div key={idx} className="bg-yellow-200 text-stone-950 px-6 py-8 flex flex-col items-center justify-center border rounded-xl w-full">
+        <h1 className="text-3xl">{item.userName}</h1>
         <h1 className="text-6xl font-bold">{item.nomorAntrian ? item.nomorAntrian : '-'}</h1>
       </div>
     ));
@@ -72,7 +78,7 @@ function BottomSection({ data }: Props) {
         {isLoading ? (
           <div className="w-full flex gap-8">
             {[...Array(3)].map((_, idx) => (
-              <div key={idx} className="w-full bg-white px-6 py-6 flex flex-col items-center justify-center border rounded-xl">
+              <div key={idx} className="w-full bg-white px-6 py-12 flex flex-col items-center justify-center border rounded-xl">
                 <Skeleton className="w-16 h-4 mb-2" /> {/* Skeleton for userName */}
                 <Skeleton className="w-24 h-10" /> {/* Skeleton for nomorAntrian */}
               </div>

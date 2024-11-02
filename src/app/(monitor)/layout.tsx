@@ -30,6 +30,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+
+        {/* <script src="https://code.responsivevoice.org/responsivevoice.js?key=FPCjN1AN"></script> */}
       </body>
     </html>
   );

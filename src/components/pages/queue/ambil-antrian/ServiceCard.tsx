@@ -23,7 +23,7 @@ function ServiceCard({ title, description, imageSrc, onClick }: ServiceCardProps
           <Image alt={`${title} image`} src={imageSrc} width={250} height={250} className="object-contain" />
         </div>
         <div className="flex flex-col max-w-[25rem] gap-2 p-4 h-[45%] overflow-hidden text-center">
-          <h1 className="text-xl font-bold">{title}</h1>
+          <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-sm">{description}</p>
         </div>
       </div>

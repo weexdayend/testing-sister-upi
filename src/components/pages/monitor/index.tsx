@@ -1,124 +1,98 @@
-import React, { useState, useEffect } from 'react'
-import TopSection from './TopSection'
-import BottomSection from './BottomSection'
+import React, { useState, useEffect, useCallback } from 'react';
 
-type Antrian = {
-  userId: string
-  userName: string
-  nomorAntrian: string | null
-  type: 'Umum' | 'Verifikasi';
-}
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
-function initializeEventSource(url: string, onMessage: (data: any) => void) {
-  const eventSource = new EventSource(url);
+import TopSection from './TopSection';
+import BottomSection from './BottomSection';
 
-  eventSource.onmessage = (event) => {
-    const parsedData = JSON.parse(event.data);
-    onMessage(parsedData);
-  };
-
-  eventSource.onerror = () => {
-    console.error(`Error connecting to ${url}`);
-    eventSource.close(); // Close the connection on error to avoid memory leaks.
-  };
-
-  return eventSource;
-}
-
-function Index({}) {
+function Index() {
   const [audioEnabled, setAudioEnabled] = useState(false);
 
-  const [dataMonitoring, setDataMonitoring] = useState<Antrian[]>([])
-  const [dataPanggilan, setDataPanggilan] = useState<any[]>([])
+  const fetchData = async () => {
+    const [monitoring, panggilan] = await Promise.all([
+      axios.get(`api/monitoring`),
+      axios.get(`api/panggilan`),
+    ]);
+    return { monitoringData: monitoring.data, panggilanData: panggilan.data };
+  };
 
-  useEffect(() => {
-    // Initialize the event sources for both data streams
-    const antrianEventSource = initializeEventSource('/api/monitoring', setDataMonitoring);
-    const panggilanEventSource = initializeEventSource('/api/panggilan', setDataPanggilan);
+  const { data, error, isLoading } = useQuery('fetchData', fetchData, {
+    refetchInterval: 5000,
+    refetchOnWindowFocus: false
+  });
+  const { monitoringData, panggilanData } = data || {};
 
-    // Cleanup on component unmount
-    return () => {
-      antrianEventSource.close();
-      panggilanEventSource.close();
-    };
-  }, []);
-
-  const executePanggilan = () => {
-    if (dataPanggilan.length > 0 && window.speechSynthesis) {
+  const executePanggilan = useCallback(() => {
+    if (panggilanData?.length > 0 && window.speechSynthesis) {
       let index = 0;
-  
+
       const speakNext = () => {
-        if (index >= dataPanggilan.length) return; // Stop if all messages have been spoken
-  
-        const panggilan = dataPanggilan[index];
+        if (index >= panggilanData.length) return;
+
+        const panggilan = panggilanData[index];
         const { id, nomorAntrian: nomor, assigned: loket } = panggilan;
-  
+
         if (nomor && loket) {
           const queueText = `Nomor Antrian: ${nomor}, ke ${loket}`;
           const utterance = new SpeechSynthesisUtterance(queueText);
           utterance.lang = 'id-ID';
           utterance.rate = 0.5;
           utterance.pitch = 0.5;
-  
-          // When the utterance finishes, move to the next item and send the update after a delay
+
           utterance.onend = () => {
-            // Update status in backend
             fetch(`/api/panggilan`, {
               method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ id, statusPanggilan: true }),
             })
             .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Error updating status for ID ${id}`);
-              }
-              index += 1; // Move to the next item
-              
-              // Add a delay before queuing the next utterance
-              setTimeout(speakNext, 5000); // Adjust delay (1000 ms) as needed
+              if (!response.ok) throw new Error(`Error updating status for ID ${id}`);
+              index += 1;
+              setTimeout(speakNext, 5000);
             })
             .catch((error) => console.error('Error updating status:', error));
           };
-  
-          // Speak the current message
+
           window.speechSynthesis.speak(utterance);
         } else {
           console.warn(`Data missing for panggilan entry: ${JSON.stringify(panggilan)}`);
-          index += 1; // Move to the next item if data is incomplete
-          setTimeout(speakNext, 1000); // Delay before next utterance in case of missing data
+          index += 1;
+          setTimeout(speakNext, 1000);
         }
       };
-  
-      // Start the first utterance
+
       speakNext();
     } else {
       console.warn('Speech synthesis not supported or no data to process');
     }
-  };  
+  }, [panggilanData]);
 
   const enableAudio = () => {
     setAudioEnabled(true);
-    executePanggilan();
   };
-  
-  // Automatically call executePanggilan when dataPanggilan changes
+
+  // Only trigger executePanggilan when audio is enabled
   useEffect(() => {
-    if (audioEnabled && dataPanggilan.length > 0) {
+    if (audioEnabled) {
       executePanggilan();
+    } else {
+      const userConfirmed = window.confirm("Do you want to enable queue announcements?");
+      if (userConfirmed) {
+        enableAudio();
+      }
     }
-  }, [audioEnabled, dataPanggilan]);
+  }, [audioEnabled, executePanggilan]);
+
+  if (isLoading) return <div>Loading data...</div>;
+  if (error) return <div>Error Fetching Data.</div>;
 
   return (
-    <div className='w-full h-full flex flex-col items-center gap-6 px-16 py-8 pt-12'>
-      {!audioEnabled && (
-        <button onClick={enableAudio}>Enable Queue Announcements</button>
-      )}
-      <TopSection data={dataPanggilan} />
-      <BottomSection data={dataMonitoring} />
+    <div className='w-full h-full flex flex-col items-center gap-6 px-16 py-8 pt-24'>
+      <TopSection data={panggilanData} />
+      <BottomSection data={monitoringData} />
     </div>
-  )
+  );
 }
 
-export default Index
+export default Index;
