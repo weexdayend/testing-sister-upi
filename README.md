@@ -163,7 +163,7 @@ NGROK dapat digunakan untuk keperluan pengujian aplikasi yang melibatkan webhook
 - Membangun Proyek: Gunakan npm run build untuk membangun proyek sebelum deployment.
 - Pengujian: Implementasikan dan jalankan pengujian untuk memastikan kualitas kode.
 
-### FAQ (Pertanyaan yang Sering Diajukan)
+### FAQ
 
 Q: Bagaimana cara menambahkan layanan baru?
 A: Untuk menambahkan layanan baru, buka file konfigurasi layanan dan tambahkan entri layanan baru sesuai dengan format yang sudah ada.
