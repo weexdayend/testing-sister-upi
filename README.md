@@ -139,8 +139,8 @@ NGROK dapat digunakan untuk keperluan pengujian aplikasi yang melibatkan webhook
 
 ### FAQ
 
-Q: Bagaimana cara menambahkan layanan baru?
-A: Untuk menambahkan layanan baru, buka file konfigurasi layanan dan tambahkan entri layanan baru sesuai dengan format yang sudah ada.
+# Q: Bagaimana cara menambahkan layanan baru?
+# A: Untuk menambahkan layanan baru, buka file konfigurasi layanan dan tambahkan entri layanan baru sesuai dengan format yang sudah ada.
 
-Q: Apakah sistem ini mendukung multi-lokasi?
-A: Ya, sistem ini mendukung multi-lokasi dan memungkinkan pengelolaan antrian di beberapa lokasi secara bersamaan.
+# Q: Apakah sistem ini mendukung multi-lokasi?
+# A: Ya, sistem ini mendukung multi-lokasi dan memungkinkan pengelolaan antrian di beberapa lokasi secara bersamaan.
