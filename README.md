@@ -77,7 +77,7 @@ DATABASE_URL="postgresql://<user>:<password>@<host>:<port>/<database>"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="generate with openssl"
 ```
-Ganti <user>, <password>, <host>, <port>, dan <database> dengan detail PostgreSQL Anda.
+Ganti `<user>`, `<password>`, `<host>`, `<port>`, dan `<database>` dengan detail PostgreSQL Anda.
 
 3. Run Database Migrations
 Jalankan migrasi Prisma untuk mengatur skema database Anda:
