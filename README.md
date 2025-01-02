@@ -142,7 +142,7 @@ NGROK dapat digunakan untuk keperluan pengujian aplikasi yang melibatkan webhook
 - **Q: Bagaimana cara menambahkan layanan baru?**  
   **A:** Untuk menambahkan layanan baru, buka file (`/src/components/pages/queue/ambil-antrian
 /ServiceGrid.tsx`), dan tambahkan entri layanan baru sesuai dengan format yang sudah ada. Pastikan untuk menambahkan nama layanan, deskripsi, dan ID unik untuk setiap layanan.
-`
+```bash
 const services: ServiceCategories = {
   "Layanan Pelanggan": [
     { title: 'Informasi Pelatihan / Kursus', description: 'Details about available training and courses.' },
@@ -155,7 +155,7 @@ const services: ServiceCategories = {
     { title: 'Layanan Verifikasi', description: 'Verification services available for all members.' }
   ]
 };
-`
+```
 
 - **Q: Apakah sistem ini mendukung multi-lokasi?**  
   **A:** Ya, sistem ini mendukung multi-lokasi. Anda dapat mengelola antrian untuk beberapa lokasi secara bersamaan. Setiap lokasi dapat memiliki daftar layanan dan antrian yang terpisah, dan petugas dapat mengelola antrian di setiap lokasi secara independen.
