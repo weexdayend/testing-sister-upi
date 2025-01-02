@@ -140,8 +140,7 @@ NGROK dapat digunakan untuk keperluan pengujian aplikasi yang melibatkan webhook
 ## FAQ
 
 - **Q: Bagaimana cara menambahkan layanan baru?**  
-  **A:** Untuk menambahkan layanan baru, buka file (`/src/components/pages/queue/ambil-antrian
-/ServiceGrid.tsx`), dan tambahkan entri layanan baru sesuai dengan format yang sudah ada. Pastikan untuk menambahkan nama layanan, deskripsi, dan ID unik untuk setiap layanan.
+  **A:** Untuk menambahkan layanan baru, buka file (`/src/components/pages/queue/ambil-antrian/ServiceGrid.tsx`), dan tambahkan entri layanan baru sesuai dengan format yang sudah ada. Pastikan untuk menambahkan nama layanan, deskripsi, dan ID unik untuk setiap layanan.
 ```bash
 const services: ServiceCategories = {
   "Layanan Pelanggan": [
