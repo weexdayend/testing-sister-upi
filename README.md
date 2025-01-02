@@ -14,11 +14,10 @@ Sistem Manajemen Antrian adalah aplikasi yang dirancang untuk mengelola alur ant
 4. [Panduan Pengguna Teknis](#panduan-pengguna-teknis)
    - [Persyaratan Sistem](#persyaratan-sistem)
    - [Instalasi dan Konfigurasi](#instalasi-dan-konfigurasi)
-5. [Struktur Proyek](#struktur-proyek)
-6. [Cara menggunakan NGROK](#cara-menggunakan-ngrok)
-7. [Catatan](#catatan)
-8. [Pengembangan dan Pengujian](#pengembangan-dan-pengujian)
-9. [FAQ](#faq)
+5. [Cara menggunakan NGROK](#cara-menggunakan-ngrok)
+6. [Catatan](#catatan)
+7. [Pengembangan dan Pengujian](#pengembangan-dan-pengujian)
+8. [FAQ](#faq)
     
 
 ## Pendahuluan
@@ -105,22 +104,6 @@ yarn dev
 pnpm dev
 # or
 bun dev
-```
-
-### Struktur Proyek
-Berikut adalah struktur direktori utama dalam proyek ini:
-```bash
-sistem-antrian/
-├── prisma/             # Skema Prisma dan migrasi basis data
-├── public/             # File statis
-├── src/
-│   ├── components/     # Komponen React
-│   ├── pages/          # Halaman Next.js
-│   ├── styles/         # File CSS dan konfigurasi Tailwind
-│   └── utils/          # Fungsi utilitas
-├── .env                # Variabel lingkungan
-├── package.json        # Dependensi dan skrip npm
-└── README.md           # Dokumentasi proyek
 ```
 
 ## Cara menggunakan NGROK
