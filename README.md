@@ -58,15 +58,6 @@ Sistem Manajemen Antrian adalah aplikasi yang dirancang untuk mengelola alur ant
 - **Prisma**: ORM untuk manajemen basis data.
 - **Docker** (opsional): Untuk deployment terkontainerisasi.
 
-## Requirements
-
-- Node.js (version 18 or higher)
-- PostgreSQL as the database
-- Next.js
-- Tailwind CSS for styling
-- Prisma as the ORM for database management
-- Optional: Docker for containerized deployment
-
 ### Instalasi dan Konfigurasi
 
 ## Installation
