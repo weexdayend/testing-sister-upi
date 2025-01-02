@@ -137,10 +137,11 @@ NGROK dapat digunakan untuk keperluan pengujian aplikasi yang melibatkan webhook
 - Membangun Proyek: Gunakan npm run build untuk membangun proyek sebelum deployment.
 - Pengujian: Implementasikan dan jalankan pengujian untuk memastikan kualitas kode.
 
-### FAQ
+## FAQ
 
-- Q: Bagaimana cara menambahkan layanan baru?
-- A: Untuk menambahkan layanan baru, buka file konfigurasi layanan dan tambahkan entri layanan baru sesuai dengan format yang sudah ada.
+- **Q: Bagaimana cara menambahkan layanan baru?**  
+  **A:** Untuk menambahkan layanan baru, buka file konfigurasi layanan (`services.config.js` atau yang serupa), dan tambahkan entri layanan baru sesuai dengan format yang sudah ada. Pastikan untuk menambahkan nama layanan, deskripsi, dan ID unik untuk setiap layanan.
 
-- Q: Apakah sistem ini mendukung multi-lokasi?
-- A: Ya, sistem ini mendukung multi-lokasi dan memungkinkan pengelolaan antrian di beberapa lokasi secara bersamaan.
+- **Q: Apakah sistem ini mendukung multi-lokasi?**  
+  **A:** Ya, sistem ini mendukung multi-lokasi. Anda dapat mengelola antrian untuk beberapa lokasi secara bersamaan. Setiap lokasi dapat memiliki daftar layanan dan antrian yang terpisah, dan petugas dapat mengelola antrian di setiap lokasi secara independen.
+
