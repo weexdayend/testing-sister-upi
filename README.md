@@ -26,9 +26,9 @@ Sistem Manajemen Antrian adalah aplikasi yang dirancang untuk mengelola alur ant
 
 ## Fitur Utama
 
-- **Ambil Antrian**: Pelanggan dapat mengambil nomor antrian dengan memilih layanan yang diinginkan.
-- **Monitoring Antrian**: Menampilkan status antrian saat ini di semua loket dan memberikan pengumuman audio.
-- **Dashboard Antrian**: Antarmuka untuk petugas loket dalam mengelola antrian dan melayani pelanggan.
+- **Ambil Antrian**: `/ambil-antrian` Pelanggan dapat mengambil nomor antrian dengan memilih layanan yang diinginkan.
+- **Monitoring Antrian**: `/monitoring` Menampilkan status antrian saat ini di semua loket dan memberikan pengumuman audio.
+- **Dashboard Antrian**: `/antrian` Antarmuka untuk petugas loket dalam mengelola antrian dan melayani pelanggan.
 
 ## Panduan Pengguna Non-Teknis
 
